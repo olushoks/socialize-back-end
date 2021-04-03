@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const express = require("express");
 const router = express.Router();
 
-// CREATE USER
+// USER SIGN UP/ CREATE NEW  ACCOUNT
 router.post("/", async (req, res) => {
   try {
     // CHECK IF REQ BODY MEETS REQUIREMENT
