@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  password: { type: String, minlength: 8, maxlength: 15, required: true },
+  password: { type: String, minlength: 8, required: true },
   about: { type: String, minlength: 1, maxlength: 100 },
   profilePicture: { data: Buffer, contentType: String },
   posts: { type: [postSchema], default: [] },

@@ -1,6 +1,7 @@
 const { User, validateUser } = require("../model/user");
 const { Post, validatePost } = require("../model/post");
 
+const bcrypt = require("bcrypt");
 const express = require("express");
 const router = express.Router();
 
@@ -16,9 +17,12 @@ router.post("/", async (req, res) => {
     let user = await User.findOne({ username: req.body.username });
     if (user) return res.status(400).send(`User already exists`);
 
+    // GENERATE SALT FOR PASSWORD HASH
+    const salt = await bcrypt.genSalt(10);
+
     user = new User({
       username: req.body.username,
-      password: req.body.password,
+      password: await bcrypt.hash(req.body.password, salt),
     });
 
     await user.save();
