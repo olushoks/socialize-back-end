@@ -1,0 +1,30 @@
+{
+  "name": "socialize-back-end",
+  "version": "1.0.0",
+  "description": "Back-End application with support for log-in, log-out, sign-up, post creation, friend search capabilities",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olushoks/socialize-back-end.git"
+  },
+  "author": "Olukayode Shokunbi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/olushoks/socialize-back-end/issues"
+  },
+  "homepage": "https://github.com/olushoks/socialize-back-end#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "config": "^3.3.6",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "joi": "^17.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.12.3",
+    "nodemon": "^2.0.7"
+  }
+}
