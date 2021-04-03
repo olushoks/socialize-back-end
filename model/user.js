@@ -1,3 +1,4 @@
+const { postSchema } = require("./post");
 const mongoose = require("mongoose");
 const Joi = require("joi");
 const fs = require("fs");
