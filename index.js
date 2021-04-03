@@ -3,15 +3,15 @@ const app = express();
 const cors = require("cors");
 const connectDB = require("./starter/database");
 
-// CALL CORS
-app.use(cors());
-
 // CONNECT TO DATABASE
 connectDB();
 
-const PORT = process.env.PORT || 5000;
+// CALL CORS
+app.use(cors());
+app.use(express.json());
 
 // INITIALIZE PORT
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);
 });
