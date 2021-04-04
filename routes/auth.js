@@ -2,6 +2,8 @@ const Joi = require("joi");
 const express = require("express");
 const bcrypt = require("bcrypt");
 const { User } = require("../model/user");
+const config = require("config");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 // USER SIGN IN
@@ -23,7 +25,12 @@ router.post("/", async (req, res) => {
     if (!validPassword)
       return res.status(400).send(`Invalid username or password`);
 
-    return res.send(true);
+    const token = jwt.sign(
+      { _id: user._id, username: user.username },
+      config.get("jwtSecret")
+    );
+
+    return res.send(token);
   } catch (error) {
     return res.status(500).send(`Internal Server Error: ${error}`);
   }
