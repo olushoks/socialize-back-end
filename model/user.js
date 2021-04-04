@@ -1,8 +1,10 @@
 const { postSchema } = require("./post");
 const mongoose = require("mongoose");
 const Joi = require("joi");
-const fs = require("fs");
-const multer = require("multer");
+const config = require("config");
+const jwt = require("jsonwebtoken");
+// const fs = require("fs");
+// const multer = require("multer");
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -21,6 +23,14 @@ const userSchema = new mongoose.Schema({
   pendingRequest: { default: [] },
   signUpDate: { type: Date, default: Date.now },
 });
+
+// METHOD TO GET JWT
+userSchema.methods.generateAuthToken = function () {
+  return jwt.sign(
+    { _id: this._id, username: this.username },
+    config.get("jwtSecret")
+  );
+};
 
 const User = mongoose.model("User", userSchema);
 
