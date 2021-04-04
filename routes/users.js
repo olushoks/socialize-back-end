@@ -3,6 +3,8 @@ const { Post, validatePost } = require("../model/post");
 
 const bcrypt = require("bcrypt");
 const express = require("express");
+const config = require("config");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 // USER SIGN UP/ CREATE NEW  ACCOUNT
@@ -26,7 +28,14 @@ router.post("/", async (req, res) => {
     });
 
     await user.save();
-    return res.status(200).send({ _id: user._id, username: user.username });
+    const token = jwt.sign(
+      { _id: user._id, username: user.username },
+      config.get("jwtSecret")
+    );
+    return res
+      .header("x-auth-token", token)
+      .header("access-control-expose-headers", "x-auth-token")
+      .send({ _id: user._id, username: user.username });
   } catch (error) {
     res.status(500).send(`Internal Server Error: ${error}`);
   }
