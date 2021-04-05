@@ -23,9 +23,13 @@ router.post("/", async (req, res) => {
     if (!validPassword)
       return res.status(400).send(`Invalid username or password`);
 
+    // CHANGE STATUS FROM OFFLINE TO ONLINE
+    user.isOnline = true;
+    await user.save();
+
     const token = user.generateAuthToken();
 
-    return res.send(token);
+    return res.send(token, user, user.isOnline);
   } catch (error) {
     return res.status(500).send(`Internal Server Error: ${error}`);
   }
