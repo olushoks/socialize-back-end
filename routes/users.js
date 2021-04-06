@@ -126,7 +126,7 @@ router.post("/:user/accept-request/:friendsUserName", async (req, res) => {
     // GET CURRENT USER IN DB
     const user = await User.findOne({ username: req.params.user });
 
-    //  GET SPECIFIC REQUEST TO ACCEPT
+    // GET SPECIFIC REQUEST TO ACCEPT
     const requestToAccept = user.pendingRequest.filter((request) => {
       if (request.username === req.params.friendsUserName) return true;
     });
@@ -134,18 +134,16 @@ router.post("/:user/accept-request/:friendsUserName", async (req, res) => {
     // MOVE FRIEND FROM PENDING REQUEST ARRAY TO FRIENDS ARRAY
     user.friends.unshift(requestToAccept);
 
-    // // REMOVE FRIEND FROM PENDING REQUEST
-    // const updatedPendingRequests = user.pendingRequest.filter((request) => {
-    //   if (request.username !== req.params.friendsUserName) return true;
-    // });
+    // REMOVE FRIEND FROM PENDING REQUEST
+    const updatedPendingRequests = user.pendingRequest.filter((request) => {
+      if (request.username !== req.params.friendsUserName) return true;
+    });
 
-    // user.pendingRequest = updatedPendingRequests;
+    user.pendingRequest = [...updatedPendingRequests];
 
-    // // REMOVE FRIEND FROM PENDING REQUEST
-    // // await requestToAccept.remove();
-
-    // user.save();
-    return res.send(requestToAccept);
+    user.save();
+    // return res.send(requestToAccept);
+    return res.send(user.pendingRequest);
   } catch (error) {
     return res.status(500).send(`Internal Server Error: ${error}`);
   }
