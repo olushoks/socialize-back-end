@@ -127,7 +127,7 @@ router.post("/:user/accept-request/:friendsUserName", async (req, res) => {
     const user = await User.findOne({ username: req.params.user });
 
     // GET SPECIFIC REQUEST TO ACCEPT
-    const requestToAccept = user.pendingRequest.filter((request) => {
+    const [requestToAccept] = user.pendingRequest.filter((request) => {
       if (request.username === req.params.friendsUserName) return true;
     });
 
@@ -154,10 +154,6 @@ router.post("/:user/deny-request/:friendsUserName", async (req, res) => {
     // GET CURRENT USER IN DB
     const user = await User.findOne({ username: req.params.user });
 
-    // GET SPECIFIC REQUEST TO ACCEPT
-    // const requestToDeny = user.pendingRequest.filter((request) => {
-    //   if (request.username === req.params.friendsUserName) return true;
-    // });
 
     // REMOVE FRIEND FROM PENDING REQUEST
     const updatedPendingRequests = user.pendingRequest.filter((request) => {
@@ -170,6 +166,23 @@ router.post("/:user/deny-request/:friendsUserName", async (req, res) => {
     return res.send(user.pendingRequest);
   } catch (error) {
     return res.status(500).send(`Internal Server Error: ${error}`);
+  }
+})
+
+// DELETE FRIEND
+router.delete("/:user/delete-friend/:friendToDelete", async (req, res) => {
+  try {
+    const user = await User.findOne({username: req.params.user});
+
+    const updatedFriendsList = user.friends.filter((friend) => {
+      if (friend.username !== req.params.friendToDelete) return true;
+    });
+
+    user.friends = [...updatedFriendsList];
+    await user.save();
+    return res.send(user.friends)
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`)
   }
 })
 
