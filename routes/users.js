@@ -39,4 +39,30 @@ router.post("/", async (req, res) => {
   }
 });
 
+// MAKE A NEW POST
+router.post("/:username/createpost", async (req, res) => {
+  try {
+    // CHECK IF POST MEETS REQUIIREMENT
+    const { error } = validatePost(req.body);
+
+    if (error) return res.status(400).send(Error.details[0].message);
+
+    // CHECK FOR CURRENT USER
+    const user = await User.findOne({ username: req.params.username });
+
+    // CREATE NEW POST SUB DOC
+    const post = new Post({
+      content: req.body.content,
+    });
+
+    // PUSH POST INTO USER OBJECT
+    user.posts.push(post);
+    user.save();
+
+    return res.send(post);
+  } catch (error) {
+    res.status(500).send(`Internal Server Error: ${error}`);
+  }
+});
+
 module.exports = router;
