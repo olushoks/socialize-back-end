@@ -100,11 +100,22 @@ router.post("/:user/send-request/:friendsUserName", async (req, res) => {
       username: req.params.friendsUserName,
     });
 
+    // CHECK IF REQUEST HAS BEEN PREVIOUSLY SENT TO AVOID DUPLICIATE REQUEST
+    const wasRequestPreviouslySent = potentialFriend.pendingRequest.filter(
+      (request) => {
+        if (request.username === user.username) return true;
+      }
+    );
+
+    if (wasRequestPreviouslySent.length > 0)
+      return res.status(404).send(`Request has been previously sent`);
+
     // STORE CURRENT USERS INFO IN  FRIENDS PENDING REQUEST
-    potentialFriend.pendingRequest.push(user);
+    potentialFriend.pendingRequest.unshift(user);
     potentialFriend.save();
 
-    return res.send(potentialFriend);
+    return res.send(potentialFriend.pendingRequest);
+    // return res.send(wasRequestPreviouslySent);
   } catch (error) {
     return res.status(500).send(`Internal Server Error: ${error}`);
   }
