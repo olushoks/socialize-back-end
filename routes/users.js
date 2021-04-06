@@ -141,12 +141,36 @@ router.post("/:user/accept-request/:friendsUserName", async (req, res) => {
 
     user.pendingRequest = [...updatedPendingRequests];
 
-    user.save();
-    // return res.send(requestToAccept);
+    await user.save();
     return res.send(user.pendingRequest);
   } catch (error) {
     return res.status(500).send(`Internal Server Error: ${error}`);
   }
 });
+
+// DENY FRIEND REQUEST
+router.post("/:user/deny-request/:friendsUserName", async (req, res) => {
+  try {
+    // GET CURRENT USER IN DB
+    const user = await User.findOne({ username: req.params.user });
+
+    // GET SPECIFIC REQUEST TO ACCEPT
+    // const requestToDeny = user.pendingRequest.filter((request) => {
+    //   if (request.username === req.params.friendsUserName) return true;
+    // });
+
+    // REMOVE FRIEND FROM PENDING REQUEST
+    const updatedPendingRequests = user.pendingRequest.filter((request) => {
+      if (request.username !== req.params.friendsUserName) return true;
+    });
+
+    user.pendingRequest = [...updatedPendingRequests];
+
+    await user.save();
+    return res.send(user.pendingRequest);
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`);
+  }
+})
 
 module.exports = router;
