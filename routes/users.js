@@ -115,7 +115,37 @@ router.post("/:user/send-request/:friendsUserName", async (req, res) => {
     potentialFriend.save();
 
     return res.send(potentialFriend.pendingRequest);
-    // return res.send(wasRequestPreviouslySent);
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`);
+  }
+});
+
+// ACCEPT FRIEND REQUEST
+router.post("/:user/accept-request/:friendsUserName", async (req, res) => {
+  try {
+    // GET CURRENT USER IN DB
+    const user = await User.findOne({ username: req.params.user });
+
+    //  GET SPECIFIC REQUEST TO ACCEPT
+    const requestToAccept = user.pendingRequest.filter((request) => {
+      if (request.username === req.params.friendsUserName) return true;
+    });
+
+    // MOVE FRIEND FROM PENDING REQUEST ARRAY TO FRIENDS ARRAY
+    user.friends.unshift(requestToAccept);
+
+    // // REMOVE FRIEND FROM PENDING REQUEST
+    // const updatedPendingRequests = user.pendingRequest.filter((request) => {
+    //   if (request.username !== req.params.friendsUserName) return true;
+    // });
+
+    // user.pendingRequest = updatedPendingRequests;
+
+    // // REMOVE FRIEND FROM PENDING REQUEST
+    // // await requestToAccept.remove();
+
+    // user.save();
+    return res.send(requestToAccept);
   } catch (error) {
     return res.status(500).send(`Internal Server Error: ${error}`);
   }
