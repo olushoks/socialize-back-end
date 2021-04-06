@@ -65,4 +65,24 @@ router.post("/:username/createpost", async (req, res) => {
   }
 });
 
+// LIKE POST
+router.post("/:username/:postId/like", async (req, res) => {
+  try {
+    // CHECK FOR CURRENT USER
+    const user = await User.findOne({ username: req.params.username });
+
+    // SEARCH FOR THE POST WITHIN POSTS SUBDOC
+    const post = user.posts.id(req.params.postId);
+
+    // INCREASE LIKES
+    post.likes++;
+
+    user.save();
+
+    return res.send(post);
+  } catch (error) {
+    res.status(500).send(`Internal Server Error: ${error}`);
+  }
+});
+
 module.exports = router;
