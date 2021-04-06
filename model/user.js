@@ -19,8 +19,8 @@ const userSchema = new mongoose.Schema({
   profilePicture: { data: Buffer, contentType: String },
   posts: { type: [postSchema], default: [] },
   isOnline: { type: Boolean, default: false },
-  friends: { default: [] },
-  pendingRequest: { default: [] },
+  friends: { type: [] },
+  pendingRequest: { type: [] },
   signUpDate: { type: Date, default: Date.now },
 });
 

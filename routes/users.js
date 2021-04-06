@@ -40,7 +40,7 @@ router.post("/", async (req, res) => {
 });
 
 // MAKE A NEW POST
-router.post("/:username/createpost", async (req, res) => {
+router.post("/:user/createpost", async (req, res) => {
   try {
     // CHECK IF POST MEETS REQUIIREMENT
     const { error } = validatePost(req.body);
@@ -48,7 +48,7 @@ router.post("/:username/createpost", async (req, res) => {
     if (error) return res.status(400).send(Error.details[0].message);
 
     // CHECK FOR CURRENT USER
-    const user = await User.findOne({ username: req.params.username });
+    const user = await User.findOne({ username: req.params.user });
 
     // CREATE NEW POST SUB DOC
     const post = new Post({
@@ -66,7 +66,7 @@ router.post("/:username/createpost", async (req, res) => {
 });
 
 // LIKE POST
-router.post("/:username/:postId/like", async (req, res) => {
+router.post("/:user/:postId/like", async (req, res) => {
   try {
     // CHECK FOR CURRENT USER
     const user = await User.findOne({ username: req.params.username });
@@ -82,6 +82,31 @@ router.post("/:username/:postId/like", async (req, res) => {
     return res.send(post);
   } catch (error) {
     res.status(500).send(`Internal Server Error: ${error}`);
+  }
+});
+
+// SEND FRIEND REQUEST
+router.post("/:user/send-request/:friendsUserName", async (req, res) => {
+  try {
+    // SELECT USERNAME, ONLINE STATUS & POSTS FROM CURRENT USER DOC
+    const user = await User.findOne({ username: req.params.user }).select({
+      username: 1,
+      isOnline: 1,
+      posts: 1,
+    });
+
+    // SEARCH FOR POTENTIAL FRIEND IN DB
+    const potentialFriend = await User.findOne({
+      username: req.params.friendsUserName,
+    });
+
+    // STORE CURRENT USERS INFO IN  FRIENDS PENDING REQUEST
+    potentialFriend.pendingRequest.push(user);
+    potentialFriend.save();
+
+    return res.send(potentialFriend);
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`);
   }
 });
 
