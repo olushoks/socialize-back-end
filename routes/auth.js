@@ -11,7 +11,10 @@ router.post("/", async (req, res) => {
 
     if (error) return res.status(400).send(error.details[0].message);
 
-    let user = await User.findOne({ username: req.body.username });
+    //et user = await User.findOne({ username: req.body.username });
+    let user = await User.findOne({ username: req.body.username }).select({
+      password: 0,
+    });
 
     if (!user) return res.status(400).send(`Invalid username or password`);
 
@@ -29,7 +32,10 @@ router.post("/", async (req, res) => {
 
     const token = user.generateAuthToken();
 
-    return res.send(token, user, user.isOnline);
+    return res
+      .header("x-auth-token", token)
+      .header("access-control-expose-headers", "x-auth-token")
+      .send(user);
   } catch (error) {
     return res.status(500).send(`Internal Server Error: ${error}`);
   }

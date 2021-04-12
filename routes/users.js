@@ -6,7 +6,7 @@ const express = require("express");
 const router = express.Router();
 
 // USER SIGN UP/ CREATE NEW  ACCOUNT
-router.post("/", async (req, res) => {
+router.post("/create-account", async (req, res) => {
   try {
     // CHECK IF REQ BODY MEETS REQUIREMENT
     const { error } = validateUser(req.body);
@@ -14,7 +14,9 @@ router.post("/", async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
 
     // CHECK IF USER ALREADY EXISTS
-    let user = await User.findOne({ username: req.body.username });
+    let user = await User.findOne({ username: req.body.username }).select({
+      password: 0,
+    });
     if (user) return res.status(400).send(`User already exists`);
 
     // GENERATE SALT FOR PASSWORD HASH
@@ -154,7 +156,6 @@ router.post("/:user/deny-request/:friendsUserName", async (req, res) => {
     // GET CURRENT USER IN DB
     const user = await User.findOne({ username: req.params.user });
 
-
     // REMOVE FRIEND FROM PENDING REQUEST
     const updatedPendingRequests = user.pendingRequest.filter((request) => {
       if (request.username !== req.params.friendsUserName) return true;
@@ -167,12 +168,12 @@ router.post("/:user/deny-request/:friendsUserName", async (req, res) => {
   } catch (error) {
     return res.status(500).send(`Internal Server Error: ${error}`);
   }
-})
+});
 
 // DELETE FRIEND
 router.delete("/:user/delete-friend/:friendToDelete", async (req, res) => {
   try {
-    const user = await User.findOne({username: req.params.user});
+    const user = await User.findOne({ username: req.params.user });
 
     const updatedFriendsList = user.friends.filter((friend) => {
       if (friend.username !== req.params.friendToDelete) return true;
@@ -180,10 +181,10 @@ router.delete("/:user/delete-friend/:friendToDelete", async (req, res) => {
 
     user.friends = [...updatedFriendsList];
     await user.save();
-    return res.send(user.friends)
+    return res.send(user.friends);
   } catch (error) {
-    return res.status(500).send(`Internal Server Error: ${error}`)
+    return res.status(500).send(`Internal Server Error: ${error}`);
   }
-})
+});
 
 module.exports = router;
